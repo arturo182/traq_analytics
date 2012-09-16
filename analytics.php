@@ -25,8 +25,8 @@ use avalon\Database;
  *
  * @package Traq
  * @subpackage Plugins
- * @author Jack P.
- * @copyright (c) Jack P.
+ * @author arturo182
+ * @copyright (c) arturo182
  */
 class Plugin_analytics extends PluginBase
 {
