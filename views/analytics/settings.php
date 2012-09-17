@@ -3,19 +3,19 @@
 	<form action="<?php echo Request::full_uri(); ?>" method="post">
 		<div class="tabular box">
 			<div class="group">
-				<label><?php echo l('plugins.analytics.tracking_id'); ?></label>
+				<label><?php echo l('analytics.tracking_id'); ?></label>
 				<?php echo Form::text('settings[tracking_id]', array('value' => $settings['tracking_id'])); ?>
 			</div>
 			<div class="group">
-				<label><?php echo l('plugins.analytics.track_subdomains'); ?></label>
+				<label><?php echo l('analytics.track_subdomains'); ?></label>
 				<?php echo Form::checkbox('settings[subdomains]', 1, array('checked' => $settings['subdomains'], 'onClick' => 'if(this.checked) { $(\'#domain\').removeAttr(\'disabled\'); } else { $(\'#domain\').attr(\'disabled\', \'disabled\'); }')); ?>
 			</div>
 			<div class="group">
-				<label><?php echo l('plugins.analytics.main_domain'); ?></label>
+				<label><?php echo l('analytics.main_domain'); ?></label>
 				<?php echo Form::text('settings[domain]', array('value' => $settings['domain'], 'id' => 'domain')); ?>
 			</div>
 			<div class="group">
-				<label><?php echo l('plugins.analytics.multiple_domains'); ?></label>
+				<label><?php echo l('analytics.multiple_domains'); ?></label>
 				<?php echo Form::checkbox('settings[multidomains]', 1, array('checked' => $settings['multidomains'])); ?>
 			</div>
 		</div>
