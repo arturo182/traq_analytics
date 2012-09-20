@@ -17,8 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Traq. If not, see <http://www.gnu.org/licenses/>.
  */
+namespace traq\plugins;
 
 use avalon\Database;
+use \FishHook;
+use \Router;
 
 /**
  * Google Analytics Plugin.
@@ -28,7 +31,7 @@ use avalon\Database;
  * @author arturo182
  * @copyright (c) arturo182
  */
-class Plugin_analytics extends PluginBase
+class Analytics extends \traq\libraries\Plugin
 {
 	public static function info()
 	{
@@ -51,30 +54,30 @@ class Plugin_analytics extends PluginBase
 
 	public static function init()
 	{
+		FishHook::add('template:layouts/default/head', function()
+		{
+			$settings = settings('analytics');
+			$settings = unserialize($settings);
+
+			if(count($settings)) {
+				echo '<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>'.PHP_EOL;
+				echo '		<script type="text/javascript">'.PHP_EOL;
+				echo "			var _gaq = _gaq || [];".PHP_EOL;
+				echo "			_gaq.push(['_setAccount', '{$settings['tracking_id']}']);".PHP_EOL;
+
+				if(isset($settings['subdomains']) && isset($settings['domain']))
+					echo "			_gaq.push(['_setDomainName', '{$settings['domain']}']);".PHP_EOL;
+
+				if(isset($settings['multidomains']))
+					echo "			_gaq.push(['_setAllowLinker', true]);".PHP_EOL;
+
+
+				echo "			_gaq.push(['_trackPageview']);".PHP_EOL;
+				echo '		</script>'.PHP_EOL;
+			}
+		});
+		
 		Router::add('/admin/plugins/analytics', 'Analytics::settings');
-		FishHook::add('template:layouts/default/head', array('Plugin_analytics', 'head_script'));
 	}
-	
-	public static function head_script()
-	{
-		$settings = settings('analytics');
-		$settings = unserialize($settings);
 
-		if(count($settings)) {
-			echo '<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>'.PHP_EOL;
-			echo '		<script type="text/javascript">'.PHP_EOL;
-			echo "			var _gaq = _gaq || [];".PHP_EOL;
-			echo "			_gaq.push(['_setAccount', '{$settings['tracking_id']}']);".PHP_EOL;
-
-			if(isset($settings['subdomains']) && isset($settings['domain']))
-				echo "			_gaq.push(['_setDomainName', '{$settings['domain']}']);".PHP_EOL;
-
-			if(isset($settings['multidomains']))
-				echo "			_gaq.push(['_setAllowLinker', true]);".PHP_EOL;
-
-
-			echo "			_gaq.push(['_trackPageview']);".PHP_EOL;
-			echo '		</script>'.PHP_EOL;
-		}
-	}
 }
