@@ -4,6 +4,7 @@ namespace traq\plugins;
 use avalon\http\Router;
 use avalon\Autoloader;
 use avalon\Database;
+
 use FishHook;
 use HTML;
 
@@ -32,7 +33,28 @@ class Analytics extends \traq\libraries\Plugin
 	
 		Router::add('/admin/plugins/analytics', 'analytics::controllers::Analytics.settings');
 		
-		FishHook::add('template:layouts/default/head', array('Analytics', 'headScript'));
+		FishHook::add('template:layouts/default/head', function()
+		{
+			$settings = settings('analytics');
+			$settings = unserialize($settings);
+
+			if(count($settings)) {
+				echo '<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>'.PHP_EOL;
+				echo '		<script type="text/javascript">'.PHP_EOL;
+				echo "			var _gaq = _gaq || [];".PHP_EOL;
+				echo "			_gaq.push(['_setAccount', '{$settings['tracking_id']}']);".PHP_EOL;
+
+				if(isset($settings['subdomains']) && isset($settings['domain']))
+					echo "			_gaq.push(['_setDomainName', '{$settings['domain']}']);".PHP_EOL;
+
+				if(isset($settings['multidomains']))
+					echo "			_gaq.push(['_setAllowLinker', true]);".PHP_EOL;
+
+
+				echo "			_gaq.push(['_trackPageview']);".PHP_EOL;
+				echo '		</script>'.PHP_EOL;
+			}
+		});
 	}
 
 	public static function __install()
@@ -45,26 +67,4 @@ class Analytics extends \traq\libraries\Plugin
 		Database::connection()->delete()->from('settings')->where('setting', 'analytics')->exec();
 	}
 
-	public static function headScript()
-	{
-		$settings = settings('analytics');
-		$settings = unserialize($settings);
-
-		if(count($settings)) {
-			echo '<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>'.PHP_EOL;
-			echo '		<script type="text/javascript">'.PHP_EOL;
-			echo "			var _gaq = _gaq || [];".PHP_EOL;
-			echo "			_gaq.push(['_setAccount', '{$settings['tracking_id']}']);".PHP_EOL;
-
-			if(isset($settings['subdomains']) && isset($settings['domain']))
-				echo "			_gaq.push(['_setDomainName', '{$settings['domain']}']);".PHP_EOL;
-
-			if(isset($settings['multidomains']))
-				echo "			_gaq.push(['_setAllowLinker', true]);".PHP_EOL;
-
-
-			echo "			_gaq.push(['_trackPageview']);".PHP_EOL;
-			echo '		</script>'.PHP_EOL;
-		}
-	}
 }
