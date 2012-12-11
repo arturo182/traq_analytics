@@ -1,13 +1,16 @@
 <?php
-include APPPATH . '/controllers/admin/app_controller.php';
+namespace analytics\controllers;
 
-use Avalon\Database;
+use traq\controllers\admin\AppController;
+use avalon\http\Request;
+use avalon\output\View;
+use avalon\Database;
 
-class AnalyticsController extends AdminAppController
+class Analytics extends AppController
 {
 	public function action_settings()
 	{
-		if (Request::$method == 'post') {
+		if (Request::method() == 'post') {
 			$settings = Request::$post['settings'];
 			$settings = serialize($settings);
 

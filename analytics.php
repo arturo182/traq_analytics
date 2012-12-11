@@ -1,24 +1,11 @@
 <?php
-/*!
- * Traq
- * Copyright (C) 2009-2012 Traq.io
- * 
- * This file is part of Traq.
- * 
- * Traq is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 3 only.
- * 
- * Traq is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Traq. If not, see <http://www.gnu.org/licenses/>.
- */
+namespace traq\plugins;
 
+use avalon\http\Router;
+use avalon\Autoloader;
 use avalon\Database;
+use FishHook;
+use HTML;
 
 /**
  * Google Analytics Plugin.
@@ -28,7 +15,7 @@ use avalon\Database;
  * @author arturo182
  * @copyright (c) arturo182
  */
-class Plugin_analytics extends PluginBase
+class Analytics extends \traq\libraries\Plugin
 {
 	public static function info()
 	{
@@ -37,6 +24,15 @@ class Plugin_analytics extends PluginBase
 			'version' => '0.1',
 			'author' => 'arturo182'
 		);
+	}
+	
+	public static function init()
+	{
+		Autoloader::registerNamespace('analytics', __DIR__);
+	
+		Router::add('/admin/plugins/analytics', 'analytics::controllers::Analytics.settings');
+		
+		FishHook::add('template:layouts/default/head', array('Analytics', 'headScript'));
 	}
 
 	public static function __install()
@@ -49,13 +45,7 @@ class Plugin_analytics extends PluginBase
 		Database::connection()->delete()->from('settings')->where('setting', 'analytics')->exec();
 	}
 
-	public static function init()
-	{
-		Router::add('/admin/plugins/analytics', 'Analytics::settings');
-		FishHook::add('template:layouts/default/head', array('Plugin_analytics', 'head_script'));
-	}
-	
-	public static function head_script()
+	public static function headScript()
 	{
 		$settings = settings('analytics');
 		$settings = unserialize($settings);
